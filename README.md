@@ -26,7 +26,7 @@
 1. 游戏里 `/xlsettings` → **实验性** → 自定义插件仓库 → 添加，填入：
 
    ```
-   https://raw.githubusercontent.com/__OWNER__/SimpleACR/main/dist/pluginmaster.json
+   https://raw.githubusercontent.com/sfy20001220-collab/simpleacr/main/dist/pluginmaster.json
    ```
 
 2. `/xlplugins` → 可用插件里找到 **SimpleACR** → 安装
@@ -34,6 +34,8 @@
 
 > 仓库是 Public 的，Dalamud 才能拉到 raw 地址。
 > 后续推了新版，在 `/xlplugins` 里点一下更新就行。
+>
+> 只自带骑士（PLD）与战士（WAR）两份循环，其它职业会提示「暂无循环」。
 
 ---
 
