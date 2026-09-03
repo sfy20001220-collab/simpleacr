@@ -1,0 +1,86 @@
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+
+  <!--
+    ============================================================================
+      SimpleACR.csproj
+    ============================================================================
+    这是 Dalamud（卫月）插件的工程文件。它和普通 .NET 类库工程最大的区别是
+    第一行用了 Dalamud.NET.Sdk 这个 MSBuild SDK：
+
+      * 自动引用 Dalamud.dll / FFXIVClientStructs.dll / ImGui.NET / Lumina
+        （从 %AppData%\XIVLauncher\addon\Hooks\dev\ 或国服对应目录取）
+      * 自动把 DalamudPackager 接进构建流程：
+          Release 构建时会在输出目录生成 <程序集名>\ 文件夹，
+          里面有 latest.zip 和补全后的插件清单 JSON，可直接挂在自己的插件仓库上
+      * 自动补清单字段：InternalName（= 程序集名）、AssemblyVersion、
+        DalamudApiLevel（= 当前 SDK 对应的 API 等级）
+
+    InternalName 一旦发布就不能改（它是配置目录名、日志前缀、插件 ID），
+    所以取名要慎重。这里 InternalName = SimpleACR。
+    ============================================================================
+  -->
+
+  <PropertyGroup>
+    <!-- 插件版本，会写进清单的 AssemblyVersion。改动后用户会在 /xlplugins 看到更新 -->
+    <Version>0.1.0.0</Version>
+
+    <!-- 下面这几个是清单字段，详见
+         https://dalamud.dev/plugin-development/project-layout -->
+    <Author>sfy20001220-collab</Author>
+    <Name>SimpleACR</Name>
+    <Punchline>学习用的卫月自动循环插件（AE 简化版）</Punchline>
+    <Description>
+SimpleACR 是一个「教学用」的 FF14 自动循环（ACR）插件模板。
+
+它复刻了 AEAssist 的核心架构：职业循环 = 一张按优先级排列的技能表，
+引擎每帧自上而下求值，取第一条满足条件的技能执行。
+
+内置骑士（PLD）与战士（WAR）两份 7.x 循环示例，
+可直接在 Rotations/Jobs 下新增自己的职业循环。
+
+仅用于学习 Dalamud 插件开发，请自行承担使用风险。
+    </Description>
+    <RepoUrl>https://github.com/sfy20001220-collab/simpleacr</RepoUrl>
+    <Tags>战斗;自动循环;ACR;学习</Tags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 要通过 FFXIVClientStructs 直接调用游戏函数，必须开 unsafe -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!--
+      国服卫月适配（本机实测，2026-09）：
+      1) 目标框架：本机卫月的 Dalamud 是 net10.0（见 %AppData%\XIVLauncherCN\addon\Hooks\dev\
+         下的 Dalamud.runtimeconfig.json），所以插件必须是 net10.0-windows。
+         写成 net8.0-windows 会导致引用的 Dalamud.dll（net10）解析失败，
+         报一大片 CS0246「找不到 IDalamudPluginInterface / IClientState ...」。
+         Dalamud.NET.Sdk 15.0.0 本身的默认值就是 net10.0-windows，这里显式写出来。
+      2) Dalamud 目录：SDK 里 DalamudLibPath 是按国际服 %AppData%\XIVLauncher\addon\Hooks\dev\
+         硬写的，且会无条件覆盖你在 csproj 里设的值。国服要改只能设环境变量
+         DALAMUD_HOME=C:\Users\asus\AppData\Roaming\XIVLauncherCN\addon\Hooks\dev
+         （SDK 里唯一能覆盖默认值的分支就是 DALAMUD_HOME）。
+         编译前请在终端执行：
+             setx DALAMUD_HOME "%AppData%\XIVLauncherCN\addon\Hooks\dev"
+    -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <!--
+    国服（卫月）适配说明：
+    Dalamud.NET.Sdk 的版本号对应 Dalamud 的 API 等级。国服用的卫月分支通常
+    滞后于国际服，如果你编译时报 "DalamudApiLevel 不匹配" 或直接找不到 SDK，
+    把版本号调低即可，例如：
+
+        <Project Sdk="Dalamud.NET.Sdk/13.0.0">
+
+    可用版本可在 https://www.nuget.org/packages/Dalamud.NET.Sdk 查看。
+
+    更老的环境（没有 Dalamud.NET.Sdk 时）可以退回手工引用模式，见 README。
+  -->
+
+</Project>

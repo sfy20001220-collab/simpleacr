@@ -1,0 +1,31 @@
+[
+  {
+    "Author": "sfy20001220-collab",
+    "Name": "SimpleACR",
+    "InternalName": "SimpleACR",
+    "AssemblyVersion": "0.1.0.0",
+    "Description": "\nSimpleACR 是一个「教学用」的 FF14 自动循环（ACR）插件模板。\n\n它复刻了 AEAssist 的核心架构：职业循环 = 一张按优先级排列的技能表，\n引擎每帧自上而下求值，取第一条满足条件的技能执行。\n\n内置骑士（PLD）与战士（WAR）两份 7.x 循环示例，\n可直接在 Rotations/Jobs 下新增自己的职业循环。\n\n仅用于学习 Dalamud 插件开发，请自行承担使用风险。\n    ",
+    "ApplicableVersion": "any",
+    "RepoUrl": "https://github.com/sfy20001220-collab/simpleacr",
+    "Tags": [
+      "战斗",
+      "自动循环",
+      "ACR",
+      "学习"
+    ],
+    "DalamudApiLevel": 15,
+    "LoadRequiredState": 0,
+    "LoadSync": false,
+    "CanUnloadAsync": false,
+    "LoadPriority": 0,
+    "Punchline": "学习用的卫月自动循环插件（AE 简化版）",
+    "AcceptsFeedback": true,
+    "DownloadLinkInstall": "https://raw.githubusercontent.com/sfy20001220-collab/simpleacr/main/dist/latest.zip",
+    "DownloadLinkUpdate": "https://raw.githubusercontent.com/sfy20001220-collab/simpleacr/main/dist/latest.zip",
+    "DownloadLinkTesting": "https://raw.githubusercontent.com/sfy20001220-collab/simpleacr/main/dist/latest.zip",
+    "LastUpdate": 1788456656251,
+    "SourceRepo": "https://github.com/sfy20001220-collab/simpleacr",
+    "IsHide": false,
+    "IsTestingExclusive": false
+  }
+]
