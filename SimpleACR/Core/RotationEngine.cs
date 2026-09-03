@@ -121,41 +121,68 @@ public sealed class RotationEngine : IDisposable
             }
         }
 
-        // ---- 求值：自上而下，命中即止 ----
+        // ---- 求值：自上而下，取"条件成立 且 这一刻真的按得出"的第一条 ----
+        //
+        // 为什么不是"第一条条件成立就锁定"：
+        //   老写法会在条件命中后就 break，然后才去 CanUse。一旦这条现在按不出来
+        //   （连锁技能的下一步没亮、目标超出射程、资源不够），整帧就直接放弃了，
+        //   循环表后面的技能一条都不会被考虑 —— 表现为"打着打着突然不动了"。
+        //   连锁/触发型职业（蝰蛇祖灵连段、武士回天返照、机工过热）必然踩到。
+        //
+        //   现在改成：条件不成立 → 跳过；节奏不对 / 按不出来 → 也跳过，继续往后找。
+        //   同时记下"第一条条件成立但被挡住"的原因，UI 上照样能看到诊断信息。
         RotationEntry? pick = null;
+        ulong pickTarget = 0;
+        string? blocked = null;
+
         foreach (var entry in Current.Entries)
         {
             if (!entry.Enabled) continue;
             if (entry.Condition != null && !entry.Condition(st)) continue;
+
+            // 已经找到可执行的了，就不用再看后面
+            if (pick != null) break;
+
+            if (!TimingAllowed(entry, st))
+            {
+                blocked ??= $"等待节奏：{ActionExecutor.NameOf(entry.ActionId)}";
+                continue;
+            }
+
+            var tid = ResolveTarget(entry.Target, st);
+            if (tid == 0)
+            {
+                blocked ??= $"{ActionExecutor.NameOf(entry.ActionId)}：无有效目标";
+                continue;
+            }
+
+            if (!ActionExecutor.CanUse(entry.ActionId, tid))
+            {
+                blocked ??= $"{ActionExecutor.NameOf(entry.ActionId)} 暂时不可用";
+                continue;
+            }
+
             pick = entry;
-            break;
+            pickTarget = tid;
         }
 
         Next = pick;
-        if (pick == null) { StatusText = "无满足条件的技能"; return; }
 
-        // ---- 节奏闸门 ----
-        if (!TimingAllowed(pick, st))
+        if (pick == null)
         {
-            StatusText = $"等待节奏：{ActionExecutor.NameOf(pick.ActionId)}";
+            // 条件一条都没成立，或者成立的全被挡住了
+            StatusText = blocked ?? "无满足条件的技能";
             return;
         }
-
-        var targetId = ResolveTarget(pick.Target, st);
-        if (targetId == 0) { StatusText = "无有效目标"; return; }
 
         // ---- 防抖 ----
         if (_lastUsedAt.TryGetValue(pick.ActionId, out var last) &&
             now - last < cfg.ActionDebounceMs)
             return;
 
-        // ---- 最终可用性检查（交给游戏判断：CD / 射程 / MP / 等级 / 咏唱）----
-        if (!ActionExecutor.CanUse(pick.ActionId, targetId))
-        {
-            StatusText = $"{ActionExecutor.NameOf(pick.ActionId)} 暂时不可用";
-            return;
-        }
+        var targetId = pickTarget;
 
+        // ---- 真的按下去 ----
         if (ActionExecutor.Use(pick.ActionId, targetId))
         {
             _lastUsedAt[pick.ActionId] = now;

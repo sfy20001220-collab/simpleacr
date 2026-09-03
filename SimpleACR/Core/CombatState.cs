@@ -131,6 +131,26 @@ public sealed class CombatState
     /// <summary>技能冷却是否好了（不含 GCD 判断）。</summary>
     public bool OffCooldown(uint actionId) => Cd(actionId) <= 0.01f;
 
+    /// <summary>
+    /// 这个技能**此刻**是不是真的按得出来（CD、射程、MP、等级、咏唱、前置状态
+    /// 全部交给游戏判断）。
+    ///
+    /// 为什么条件库里需要它：
+    ///   像蝰蛇的「祖灵连段」、武士的「回天返照」这类**连锁/触发型**技能，
+    ///   每一步都只在特定时刻可用。如果只写"我有 Reawakened buff"就选中一式，
+    ///   那打完一式后二式还没亮，引擎就会卡在一式上不动 ——
+    ///   加上 CanUse 条件后，不成立就自动往后找当前真正能按的那一步。
+    /// </summary>
+    public bool CanUse(uint actionId)
+    {
+        ulong tid = TargetId != 0 ? TargetId : ActionExecutor.SelfTargetId;
+        return ActionExecutor.CanUse(actionId, tid);
+    }
+
+    /// <summary>同上，但对**自己**施放（判断自保/自身增益技能用）。</summary>
+    public bool CanUseSelf(uint actionId)
+        => ActionExecutor.CanUse(actionId, ActionExecutor.SelfTargetId);
+
     /// <summary>当前可用的充能层数。</summary>
     public int Charges(uint actionId) => ActionExecutor.CurrentCharges(actionId);
 

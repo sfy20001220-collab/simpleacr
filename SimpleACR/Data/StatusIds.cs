@@ -36,4 +36,43 @@ public static class StatusIds
         public const uint Holmgang = 409;          // 死斗 ?
         public const uint Defiance = 91;           // 守护姿态 ?
     }
+
+    // ================= 蝰蛇剑士 VPR =================
+    //
+    // ⚠️ buff ID 写错的后果是"条件永远不成立" —— 症状是那个技能一次都不按，
+    //    比技能 ID 写错更难查。所以下面标「?」的一律额外用 CanUse 兜底：
+    //    循环里凡是不确定的 buff，都写成
+    //        s.HasBuff(S.Xxx) && s.CanUse(A.Yyy)
+    //    这样即使 buff ID 错了，技能本身能按就还是会按。
+    public static class Vpr
+    {
+        public const uint Reawakened = 3670;        // 祖灵附体（Reawaken 连段中）
+        public const uint ReadyToReawaken = 3671;   // 祖灵预备（量谱攒满，可开祖灵）
+        public const uint HuntersInstinct = 3668;   // 猎人直觉（+10% 伤害，40s）
+        public const uint Swiftscaled = 3669;       // 疾速之牙（+15% 技速，40s）
+        public const uint HonedSteel = 3672;        // 咬噬强化（咬噬尖齿 +100 威力）
+        public const uint HonedReavers = 3772;      // 穿裂强化（穿裂尖齿 +100 威力）
+
+        // --- 毒（连击带出的各类 buff）---
+        public const uint FlankstingVenom = 3645;   // 侧击之毒 ?
+        public const uint FlanksbaneVenom = 3646;   // 侧裂之毒 ?
+        public const uint HindstingVenom = 3647;    // 背击之毒 ?
+        public const uint HindsbaneVenom = 3648;    // 背裂之毒 ?
+        public const uint GrimhuntersVenom = 3649;  // 阴惨猎毒 ?
+        public const uint GrimskinsVenom = 3650;    // 阴惨肤毒 ?
+        public const uint HuntersVenom = 3657;      // 猎毒 ?
+        public const uint SwiftskinsVenom = 3658;   // 疾速肤毒 ?
+        public const uint FellhuntersVenom = 3659;  // 凶猎毒 ?
+        public const uint FellskinsVenom = 3660;    // 凶肤毒 ?
+
+        // --- 触发预备 ---
+        public const uint PoisedForDeathRattle = 3667; // 夺命之毒（蛇尾追击可用）
+        public const uint ReadyToRip = 3665;        // 双牙连击预备 ?
+        public const uint ReadyToTear = 3666;       // 双牙乱击预备 ?
+
+        // --- 通用 ---
+        public const uint TrueNorth = 1250;         // 真北
+        public const uint Bloodbath = 84;           // 浴血 ?
+        public const uint Feint = 1195;             // 牵制 ?
+    }
 }

@@ -22,7 +22,7 @@
 
   <PropertyGroup>
     <!-- 插件版本，会写进清单的 AssemblyVersion。改动后用户会在 /xlplugins 看到更新 -->
-    <Version>0.1.0.0</Version>
+    <Version>0.2.0.0</Version>
 
     <!-- 下面这几个是清单字段，详见
          https://dalamud.dev/plugin-development/project-layout -->

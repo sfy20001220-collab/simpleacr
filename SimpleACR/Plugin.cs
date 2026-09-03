@@ -149,6 +149,10 @@ public sealed class Plugin : IDalamudPlugin
                 Commands.DumpState(Engine);
                 break;
 
+            case "entries":
+                Commands.DumpEntries(Engine);
+                break;
+
             default:
                 MainWindow.Toggle();
                 break;

@@ -76,6 +76,52 @@ internal static class Commands
     }
 
     /// <summary>
+    /// 打印当前职业循环表的全部条目，带客户端里解析出的真名和"现在是否可按"。
+    ///
+    /// 这是调试连锁/触发型职业（蝰蛇祖灵连段、武士回天）的主力命令：
+    /// 哪条因为 ID 写错而永远按不出来、哪条现在卡着，一眼就能看出来。
+    /// </summary>
+    internal static void DumpEntries(RotationEngine engine)
+    {
+        var rot = engine.Current;
+        if (rot == null)
+        {
+            Service.ChatGui.Print("[SimpleACR] 当前职业没有循环。先切到有循环的职业（PLD / WAR / VPR）");
+            return;
+        }
+
+        var st = engine.LastState;
+        Service.ChatGui.Print($"[SimpleACR] 循环：{rot.Meta.Name}  共 {rot.Entries.Count} 条");
+
+        for (int i = 0; i < rot.Entries.Count; i++)
+        {
+            var e = rot.Entries[i];
+            var name = ActionExecutor.NameOf(e.ActionId);
+
+            // 客户端里查不到 = ID 写错或该版本没实装，直接标出来
+            string bad = ActionExecutor.Exists(e.ActionId) ? "" : "  ← ✗ 客户端里没有这个 ID";
+            if (!e.Enabled) bad += "  (已禁用)";
+
+            Service.ChatGui.Print($"  {i,2} [{e.Category,-9}] {e.ActionId,6} {name,-14}{bad}");
+
+            // 有战斗快照时，再标出这一刻的条件与可用性
+            if (st == null || !e.Enabled) continue;
+            bool cond;
+            try { cond = e.Condition == null || e.Condition(st); }
+            catch (Exception ex) { cond = false; bad = "  条件抛异常：" + ex.Message; }
+
+            if (cond)
+            {
+                bool usable = ActionExecutor.CanUse(
+                    e.ActionId, st.TargetId != 0 ? st.TargetId : ActionExecutor.SelfTargetId);
+                Service.ChatGui.Print($"       条件成立={cond}  此刻可按={usable}");
+            }
+        }
+
+        Service.ChatGui.Print("[SimpleACR] 提示：带 ✗ 的条目说明 ID 不对，用 /sacr find <技能名> 查真值");
+    }
+
+    /// <summary>
     /// 取技能显示名。SeString 是带富文本标记的字符串，
     /// ExtractText() 会剥掉标记拿到纯文本；老版本 Lumina 没有这个扩展方法时
     /// 退回 ToString()，显示上会带一点标记但不影响查 ID。

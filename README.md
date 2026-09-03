@@ -89,8 +89,12 @@ dotnet build
 /sacr            → 打开主窗口
 /sacr find 圣灵  → 搜技能 ID（国服客户端直接搜中文）
 /sacr dump       → 打印当前战斗状态
+/sacr entries    → 打印整张循环表，逐条标出"条件成不成立 / 此刻能不能按"
 /sacr on         → 开自动循环（先去打木人）
 ```
+
+> 调连锁型职业（蝰蛇祖灵连段、武士回天）时，`/sacr entries` 是主力工具：
+> 哪条 ID 写错（客户端里查不到）会直接标 `✗`，不用去翻 wiki。
 
 **热重载**：改完代码 → `dotnet build` → `/xlplugins` 里 Unload 再 Load。
 前提是 `Dispose()` 把事件都摘干净了，否则会出现"卸载了但还在跑"的鬼畜现象。
